@@ -12,6 +12,12 @@ type C struct {
 	pages map[uint64]BNode
 }
 
+func (c *C) strings() {
+	for addr, page := range c.pages {
+		fmt.Printf("addr: %v \n%s", addr, page.String())
+	}
+}
+
 func newC() *C {
 	pages := map[uint64]BNode{}
 
@@ -55,16 +61,11 @@ func TestInsert(t *testing.T) {
 	client := newC()
 
 	client.add("1", "2")
+	client.strings()
+	
 	client.add("3", "4")
+	client.strings()
 
-	for addr, node := range client.pages {
-		t.Logf("page addr: %v, node info: %s\n", addr, string(node.data))
-	}
-
-	t.Logf("********  after delete  ********")
-	client.del("key_001")
-	for addr, node := range client.pages {
-		t.Logf("page addr: %v, node info: %s\n", addr, string(node.data))
-	}
-
+	client.del("3")
+	client.strings()
 }

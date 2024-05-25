@@ -18,7 +18,7 @@ func treeInsert(tree *BTree, node BNode, key, val []byte) BNode {
 		if bytes.Equal(key, node.getKey(idx)) {
 			leafUpdate(new, node, idx, key, val)
 		} else {
-			leafInsert(new, node, idx+1, key, val)
+			leafInsert(new, node, idx, key, val)
 		}
 	case BNODE_NODE:
 		nodeInsert(tree, new, node, idx, key, val)
@@ -65,6 +65,7 @@ func leafInsert(new, old BNode, idx uint16, key, val []byte) {
 	nodeAppendRange(new, old, 0, 0, idx+1)
 	// idx+1 是目标存入的索引位置
 	nodeAppendKV(new, idx+1, 0, key, val)
+
 	nodeAppendRange(new, old, idx+2, idx+1, old.nkeys()-(idx+1))
 }
 

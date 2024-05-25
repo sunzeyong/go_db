@@ -21,69 +21,6 @@ func init() {
 	assert(node1Max <= BTREE_PAGE_SIZE, "init check fail, node1Max exceed page max")
 }
 
-type BTree struct {
-	root uint64 // pointer
-
-	get func(uint64) BNode // dereference a pointer
-	new func(BNode) uint64 // allocate a new page
-	del func(uint64)       // deallocate a page
-}
-
-func (tree *BTree) Delete(key []byte) bool {
-	assert(len(key) != 0, fmt.Sprintf("function:Delete, key len is zero"))
-	assert(len(key) <= BTREE_MAX_KEY_SIZE, fmt.Sprintf("function:Delete, key is exceed max key size, key: %v, len: %v", key, len(key)))
-	if tree.root == 0 {
-		return false
-	}
-
-	updated := treeDelete(tree, tree.get(tree.root), key)
-	if len(updated.data) == 0 {
-		return false
-	}
-
-	tree.del(tree.root)
-	if updated.btype() == BNODE_NODE && updated.nkeys() == 1 {
-		tree.root = updated.getPtr(0)
-	} else {
-		tree.root = tree.new(updated)
-	}
-	return true
-}
-
-func (tree *BTree) Insert(key, val []byte) {
-	assert(len(key) != 0, fmt.Sprintf("function:Insert, key is empty"))
-	assert(len(key) <= BTREE_MAX_KEY_SIZE, fmt.Sprintf("function:Insert, key is exceed size, key: %v", key))
-	assert(len(val) <= BTREE_MAX_VAL_SIZE, fmt.Sprintf("function:Insert, val is exceed size, val: %v", val))
-
-	if tree.root == 0 {
-		root := BNode{data: make([]byte, BTREE_PAGE_SIZE)}
-		root.setHeader(BNODE_LEAF, 2)
-
-		nodeAppendKV(root, 0, 0, nil, nil)
-		nodeAppendKV(root, 1, 0, key, val)
-		tree.root = tree.new(root)
-		return
-	}
-
-	node := tree.get(tree.root)
-	tree.del(tree.root)
-
-	node = treeInsert(tree, node, key, val)
-	nsplit, splitted := nodeSplit3(node)
-	if nsplit > 1 {
-		root := BNode{data: make([]byte, BTREE_PAGE_SIZE)}
-		root.setHeader(BNODE_NODE, nsplit)
-
-		for i, knode := range splitted[:nsplit] {
-			ptr, key := tree.new(knode), knode.getKey(0)
-			nodeAppendKV(root, uint16(i), ptr, key, nil)
-		}
-		tree.root = tree.new(root)
-	} else {
-		tree.root = tree.new(splitted[0])
-	}
-}
-
 /*
 *
 node format
@@ -108,7 +45,7 @@ func (node BNode) btype() uint16 {
 }
 
 func (node BNode) nkeys() uint16 {
-	return binary.LittleEndian.Uint16(node.data)
+	return binary.LittleEndian.Uint16(node.data[2:])
 }
 
 func (node BNode) setHeader(btype uint16, nkeys uint16) {
@@ -132,7 +69,9 @@ func (node BNode) setPtr(idx uint16, val uint64) {
 
 // offset
 func offsetPos(node BNode, idx uint16) uint16 {
-	assert(1 <= idx && idx <= node.nkeys(), fmt.Sprintf("function:offsetPos, idx out of range [1:n], idx: %v, n: %v", idx, node.nkeys()))
+	nkeys := node.nkeys()
+
+	assert(1 <= idx && idx <= nkeys, fmt.Sprintf("function:offsetPos, idx out of range [1:n], idx: %v, nkey: %v", idx, node.nkeys()))
 	// idx==0不用存储，所以当idx==1时，在offsets中相对偏移是1-1=0
 	return HEADLEN + 8*node.nkeys() + 2*(idx-1)
 }
@@ -172,4 +111,18 @@ func (node BNode) getVal(idx uint16) []byte {
 
 func (node BNode) nbytes() uint16 {
 	return node.kvPos(node.nkeys())
+}
+
+// for debug
+func (node BNode) String() string {
+	header := fmt.Sprintf("raw data: %v, \nbtype: %v, nkeys: %v\n", node.data[:node.nbytes()], node.btype(), node.nkeys())
+
+	pointer, offset, kvpari := "", "", ""
+	for i := uint16(0); i < node.nkeys(); i++ {
+		pointer += fmt.Sprintf("idx: %d, pointer: %v\n", i, node.getPtr(i))
+		offset += fmt.Sprintf("idx: %d, offset: %v\n", i, node.getOffset(i+1))
+		kvpari += fmt.Sprintf("idx: %d, key: %v, val: %v\n", i, string(node.getKey(i)), string(node.getVal(i)))
+	}
+
+	return fmt.Sprintf("%s\n%s\n%s\n%s", header, pointer, offset, kvpari)
 }

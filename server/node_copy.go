@@ -7,11 +7,11 @@ import (
 
 // src从srcStartIdx开始拷贝 到 dst的dstStartIdx位置，包含srcStartIdx这个位置
 func nodeAppendRange(dst, src BNode, dstStartIdx, srcStartIdx uint16, n uint16) {
-	assert(srcStartIdx+n <= src.nkeys(), fmt.Sprintf("function:nodeAppendRange, n exceed max key number, n: %v, srcStartIdx: %v, src.nkey: %v", n, srcStartIdx, src.nkeys()))
-	assert(dstStartIdx+n <= dst.nkeys(), fmt.Sprintf("function:nodeAppendRange, n exceed max key number, n: %v, dstStartIdx: %v, dst.nkey: %v", n, dstStartIdx, dst.nkeys()))
 	if n == 0 {
 		return
 	}
+	assert(srcStartIdx+n <= src.nkeys(), fmt.Sprintf("function:nodeAppendRange, n exceed max key number, n: %v, srcStartIdx: %v, src.nkey: %v", n, srcStartIdx, src.nkeys()))
+	assert(dstStartIdx+n <= dst.nkeys(), fmt.Sprintf("function:nodeAppendRange, n exceed max key number, n: %v, dstStartIdx: %v, dst.nkey: %v", n, dstStartIdx, dst.nkeys()))
 
 	// copy pointer
 	for i := uint16(0); i < n; i++ {
