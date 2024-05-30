@@ -39,6 +39,10 @@ func (db *KV) Set(key []byte, val []byte) error {
 	return flushPages(db)
 }
 
+func (db *KV) Update(key []byte, val []byte, mode int) (bool, error) {
+	return false, nil
+}
+
 func (db *KV) Del(key []byte) (bool, error) {
 	deleted := db.tree.Delete(key)
 	return deleted, flushPages(db)
