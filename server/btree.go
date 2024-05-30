@@ -12,6 +12,18 @@ type BTree struct {
 	del func(uint64)       // deallocate a page
 }
 
+func (tree *BTree) Get(key []byte) ([]byte, bool) {
+	assert(len(key) != 0, "function:Get, key is empty")
+	assert(len(key) <= BTREE_MAX_KEY_SIZE, fmt.Sprintf("function:Get, key is exceed size, key: %v", key))
+
+	node := treeGet(tree, tree.get(tree.root), key)
+	if node.data == nil {
+		return nil, false
+	}
+
+	return node.getVal(nodeLookupLE(node, key)), true
+}
+
 func (tree *BTree) Insert(key, val []byte) {
 	assert(len(key) != 0, "function:Insert, key is empty")
 	assert(len(key) <= BTREE_MAX_KEY_SIZE, fmt.Sprintf("function:Insert, key is exceed size, key: %v", key))
@@ -47,7 +59,7 @@ func (tree *BTree) Insert(key, val []byte) {
 }
 
 func (tree *BTree) Delete(key []byte) bool {
-	assert(len(key) != 0, fmt.Sprintf("function:Delete, key len is zero"))
+	assert(len(key) != 0, "function:Delete, key len is zero")
 	assert(len(key) <= BTREE_MAX_KEY_SIZE, fmt.Sprintf("function:Delete, key is exceed max key size, key: %v, len: %v", key, len(key)))
 	if tree.root == 0 {
 		return false

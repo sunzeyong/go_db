@@ -25,7 +25,7 @@ func newC() *C {
 		tree: BTree{
 			get: func(ptr uint64) BNode {
 				node, ok := pages[ptr]
-				assert(ok, fmt.Sprintf("function:get, cant find node"))
+				assert(ok, "function:get, cant find node")
 				return node
 			},
 			new: func(node BNode) uint64 {
@@ -38,7 +38,7 @@ func newC() *C {
 			},
 			del: func(ptr uint64) {
 				_, ok := pages[ptr]
-				assert(ok, fmt.Sprintf("function:del, fail to find page"))
+				assert(ok, "function:del, fail to find page")
 				delete(pages, ptr)
 			},
 		},
@@ -62,7 +62,7 @@ func TestInsert(t *testing.T) {
 
 	client.add("1", "2")
 	client.strings()
-	
+
 	client.add("3", "4")
 	client.strings()
 
