@@ -96,7 +96,7 @@ func (fl *FreeList) Update(popn int, freed []uint64) {
 		total -= flnSize(node)
 		fl.head = flnNext(node)
 	}
-	assert(len(reuse)*FREE_LIST_CAP >= len(freed) || fl.head == 0, fmt.Sprintf("freelist.update error, len(reuse): %d, fl.head: %s", len(reuse), fl.head))
+	assert(len(reuse)*FREE_LIST_CAP >= len(freed) || fl.head == 0, fmt.Sprintf("freelist.update error, len(reuse): %d, fl.head: %v", len(reuse), fl.head))
 
 	flPush(fl, freed, reuse)
 	flnSetTotal(fl.get(fl.head), uint64(total+len(freed)))

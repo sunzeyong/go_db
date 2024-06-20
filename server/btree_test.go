@@ -60,12 +60,17 @@ func (c *C) del(key string) bool {
 func TestInsert(t *testing.T) {
 	client := newC()
 
-	client.add("1", "2")
+	client.add("a_key", "a_value")
+
+	client.add("d_key", "d_value")
 	client.strings()
 
-	client.add("3", "4")
+	client.add("b_key", "b_value")
 	client.strings()
 
-	client.del("3")
+	client.del("b_key")
+	client.strings()
+
+	client.add("c_key", "c_value")
 	client.strings()
 }
