@@ -61,7 +61,7 @@ func (node BNode) getPtr(idx uint16) uint64 {
 }
 
 func (node BNode) setPtr(idx uint16, val uint64) {
-	assert(idx <= node.nkeys(), fmt.Sprintf("function:getPtr, idx exceed node max key number"))
+	assert(idx <= node.nkeys(), "function:getPtr, idx exceed node max key number")
 
 	posStart := HEADLEN + 8*idx
 	binary.LittleEndian.PutUint64(node.data[posStart:], val)

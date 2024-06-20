@@ -59,6 +59,8 @@ func nodeAppendKV(dst BNode, idx uint16, ptr uint64, key, val []byte) {
 }
 
 func nodeUpdateKV(new BNode, idx uint16, ptr uint64, key, val []byte) {
+	new.setPtr(idx, ptr)
+
 	pos := new.kvPos(idx)
 	binary.LittleEndian.PutUint16(new.data[pos+2:], uint16(len(val)))
 	copy(new.data[pos+4+uint16(len(key)):], val)
