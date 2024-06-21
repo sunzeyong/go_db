@@ -41,7 +41,7 @@ func masterLoad(db *KV) error {
 }
 
 func masterStore(db *KV) error {
-	var data [32]byte
+	var data [40]byte
 
 	copy(data[:16], []byte(DB_SIG))
 	binary.LittleEndian.PutUint64(data[16:], db.tree.root)

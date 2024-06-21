@@ -29,6 +29,29 @@ type KV struct {
 	}
 }
 
+func InitKV(path string) *KV {
+	return &KV{
+		Path: path,
+
+		mmap: struct {
+			file   int
+			total  int
+			chunks [][]byte
+		}{
+			chunks: make([][]byte, 0),
+		},
+
+		page: struct {
+			flushed uint64
+			nfree   int
+			nappend int
+			updates map[uint64][]byte
+		}{
+			updates: make(map[uint64][]byte),
+		},
+	}
+}
+
 // 操作
 func (db *KV) Get(key []byte) ([]byte, bool) {
 	return db.tree.Get(key)
@@ -58,7 +81,8 @@ func (db *KV) Open() error {
 	// mmap映射 初始化mmap
 	sz, chunk, err := mmapInit(db.fp)
 	if err != nil {
-		goto fail
+		defer db.fp.Close()
+		return err
 	}
 
 	db.mmap.file = sz
@@ -77,14 +101,11 @@ func (db *KV) Open() error {
 	// 初始化 tree 和 flush
 	err = masterLoad(db)
 	if err != nil {
-		goto fail
+		defer db.fp.Close()
+		return err
 	}
 
 	return nil
-
-fail:
-	db.fp.Close()
-	return fmt.Errorf("KV Open")
 }
 
 func (db *KV) Close() {

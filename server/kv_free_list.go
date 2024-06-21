@@ -115,6 +115,7 @@ func flPush(fl *FreeList, freed []uint64, reuse []uint64) {
 		for i, ptr := range freed[:size] {
 			flnSetPtr(new, i, ptr)
 		}
+		freed = freed[size:]
 
 		if len(reuse) > 0 {
 			fl.head, reuse = reuse[0], reuse[1:]
