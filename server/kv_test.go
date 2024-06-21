@@ -3,7 +3,7 @@ package server
 import "testing"
 
 func TestKv(t *testing.T) {
-	kv := InitKV("./db_file.hex")
+	kv := InitKV("./kv_file.hex")
 	defer kv.Close()
 
 	if err := kv.Open(); err != nil {
@@ -17,6 +17,9 @@ func TestKv(t *testing.T) {
 		t.Fatalf("fail to set key, err: %s", err)
 	}
 	if err := kv.Set([]byte("g_key"), []byte("g_value")); err != nil {
+		t.Fatalf("fail to set key, err: %s", err)
+	}
+	if err := kv.Set([]byte("a_key"), []byte("a_value")); err != nil {
 		t.Fatalf("fail to set key, err: %s", err)
 	}
 

@@ -6,6 +6,7 @@ import (
 	"syscall"
 )
 
+//  持久化和空闲页管理
 type KV struct {
 	Path string
 	fp   *os.File

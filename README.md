@@ -13,16 +13,13 @@
 在这一步基本实现了一个完整带有持久化操作的kv数据库
 
 ## step4
-实现一个relationDB,新增了表结构
+实现一个relationDB,新增了表结构; point and range query
 
 ## step5
-range query
-
-## step6
 secondary index
 
-## step7
+## step6
 transaction and concurrent
 
-## step8
+## step7
 query language
