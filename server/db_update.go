@@ -30,12 +30,12 @@ func (db *DB) Set(table string, rec Record, mode int) (bool, error) {
 }
 
 func dbUpdate(db *DB, tdef *TableDef, rec Record, mode int) (bool, error) {
-	values, err := checkRecord(tdef, rec, len(tdef.Cols))
+	values, err := checkRecord(tdef, rec)
 	if err != nil {
 		return false, err
 	}
 
-	key := encodeKey(nil, tdef.Prefix, values[:tdef.Pkeys])
-	val := encodeValues(nil, values[tdef.Pkeys:])
+	key := encodeKey(nil, tdef.Prefix, values[:tdef.PKeys])
+	val := encodeValues(nil, values[tdef.PKeys:])
 	return db.kv.Update(key, val, mode)
 }

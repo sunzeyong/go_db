@@ -10,7 +10,7 @@ type TableDef struct {
 	Name   string
 	Types  []uint32 // col types
 	Cols   []string // col names
-	Pkeys  int
+	PKeys  int
 	Prefix uint32
 }
 

@@ -12,7 +12,7 @@ var TDEF_META = &TableDef{
 	Name:   "@meta",
 	Types:  []uint32{TYPE_BYTES, TYPE_BYTES},
 	Cols:   []string{"key", "val"},
-	Pkeys:  1,
+	PKeys:  1,
 }
 
 var TDEF_TABLE = &TableDef{
@@ -20,7 +20,7 @@ var TDEF_TABLE = &TableDef{
 	Name:   "@table",
 	Types:  []uint32{TYPE_BYTES, TYPE_BYTES},
 	Cols:   []string{"name", "def"},
-	Pkeys:  1,
+	PKeys:  1,
 }
 
 func getTableDef(db *DB, name string) *TableDef {
