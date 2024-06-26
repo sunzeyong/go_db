@@ -15,7 +15,7 @@ type TableDef struct {
 }
 
 func (db *DB) TableNew(tdef *TableDef) error {
-	if err := tableDefCheck(tdef); err != nil {
+	if err := tdef.tableDefCheck(); err != nil {
 		return err
 	}
 
@@ -60,6 +60,18 @@ func (db *DB) TableNew(tdef *TableDef) error {
 	return err
 }
 
-func tableDefCheck(tdef *TableDef) error {
+func (t *TableDef) tableDefCheck() error {
+	if t.Name == "" {
+		return fmt.Errorf("name should not be empty")
+	}
+
+	if len(t.Cols) != len(t.Types) {
+		return fmt.Errorf("cols should be equal to types")
+	}
+
+	if t.PKeys == len(t.Cols) {
+		return fmt.Errorf("pkeys should be smaller than cols length")
+	}
+
 	return nil
 }

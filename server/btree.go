@@ -12,15 +12,6 @@ type BTree struct {
 	del func(uint64)       // deallocate a page
 }
 
-type InsertReq struct {
-	tree *BTree
-
-	Added bool
-	Key   []byte
-	Val   []byte
-	Mode  int
-}
-
 func (tree *BTree) Get(key []byte) ([]byte, bool) {
 	assert(len(key) != 0, "function:Get, key is empty")
 	assert(len(key) <= BTREE_MAX_KEY_SIZE, fmt.Sprintf("function:Get, key is exceed size, key: %v", key))
@@ -88,6 +79,16 @@ func (tree *BTree) Delete(key []byte) bool {
 	return true
 }
 
+type InsertReq struct {
+	tree *BTree
+
+	Added bool
+	Key   []byte
+	Val   []byte
+	Mode  int
+}
+// todo
 func (tree *BTree) InsertEx(req *InsertReq) {
+
 
 }

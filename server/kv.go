@@ -64,6 +64,10 @@ func (db *KV) Set(key []byte, val []byte) error {
 }
 
 func (db *KV) Update(key []byte, val []byte, mode int) (bool, error) {
+
+	
+
+
 	return false, nil
 }
 
